@@ -1,0 +1,28 @@
+#remoteVideo {
+    width: 640px;
+    height: 480px;
+}
+#localVideo {
+    width: 130px;
+    height: 100px;
+}
+body, html {
+    background-color: white;
+    margin: 0px;
+    height: 100%
+}
+.outer-container {
+    width: 100%;
+    height: 100%;
+}
+.inner-container {
+    display: inline-block;
+    position: relative;
+}
+.video-overlay {
+    position: absolute;
+}
+video {
+    width: 100%;
+    height: 100%;
+}
