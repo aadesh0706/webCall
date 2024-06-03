@@ -33,7 +33,7 @@ io.on('connection', function (socket) {
 
 });
 
-http.listen('https://web-call-6x2n.vercel.app/', function () {
+http.listen(3000, function () {
     console.log('listening on *:3000');
 console.log("http://localhost:3000");
 });
