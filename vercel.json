@@ -1,20 +1,11 @@
 {
   "version": 2,
   "builds": [
-    {
-      "src": "./server.js",  
-      "use": "@vercel/node"
-    }
+    { "src": "server.js", "use": "@vercel/node" },
+    { "src": "public/**/*", "use": "@vercel/static" }
   ],
   "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/",
-      "methods":["GET","POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-          "headers":{
-              "Access-Control-Allow-Origin": "*"
-          }
-    }
-    
+    { "src": "/socket.io/(.*)", "dest": "/server.js" },
+    { "src": "/(.*)", "dest": "/server.js" }
   ]
 }
