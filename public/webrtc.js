@@ -9,81 +9,77 @@ let localStream;
 let remoteStream;
 let rtcPeerConnection;
 let iceServers = {
-    'iceServers': [{
-        'url': 'stun:stun.services.mozilla.com'
-    },
-    {
-        'url': 'stun:stun.l.google.com:19302'
-    }
+    'iceServers': [
+        { 'url': 'stun:stun.services.mozilla.com' },
+        { 'url': 'stun:stun.l.google.com:19302' }
     ]
-}
+};
 
 const streamConstraints = {
-    video:false,
+    video: false,
     audio: true
 };
 
 let isCaller = false;
-
 let caller = null;
 let receiver = null;
 
 $(document).ready(function () {
     showHome();
+
+    // Start button (Create a new call)
     $('#startBtn').click(function () {
         socket.emit('create', function (res) {
             console.log('send create');
-            $('#caller_code').val(res);
+            $('#caller_code').val(res); // Show unique caller code
             caller = res;
             showCreate();
             UIkit.tooltip('#caller_code').show();
-            navigator.mediaDevices.getUserMedia(streamConstraints).then(function (stream) {
-                addLocalStream(stream);
-                isCaller = true;
-            }).catch(function (err) {
-                console.log('An error ocurred when accessing media devices', err);
-            });
+            navigator.mediaDevices.getUserMedia(streamConstraints)
+                .then(function (stream) {
+                    addLocalStream(stream);
+                    isCaller = true;
+                })
+                .catch(function (err) {
+                    console.log('Error accessing media devices', err);
+                });
         });
     });
 
+    // Join button (Enter code to join an existing call)
     $('#joinBtn').click(function () {
         showJoin();
         UIkit.tooltip('#caller_code').show();
     });
 
-    //---------------------------------------------------------------------------------------
-    //---------------------------------------------------------------------------------------
-    //---------------------------------------------------------------------------------------
-
+    // Start call button (For the receiver to start the call)
     $('#startCallBtn').click(function () {
         showCallScreen();
     });
 
+    // Ready event from the server (Receiver is ready)
     socket.on('ready', function (code) {
         console.log('receiver ready at', code);
         receiver = code;
         createPeerConnection();
-        let offerOptions = {
-            offerToReceiveAudio: 1
-        }
+        let offerOptions = { offerToReceiveAudio: 1 };
         rtcPeerConnection.createOffer(offerOptions)
             .then(desc => setLocalAndOffer(desc))
             .catch(e => console.log(e));
     });
 
-    //---------------------------------------------------------------------------------------
-    //---------------------------------------------------------------------------------------
-    //---------------------------------------------------------------------------------------
-
+    // Join call button (Receiver joining the call)
     $('#joinCallBtn').click(function () {
         showCallScreen();
         const code = $('#join_code').val();
-        navigator.mediaDevices.getUserMedia(streamConstraints).then(function (stream) {
-            addLocalStream(stream);
-            socket.emit('join', code);
-        }).catch(function (err) {
-            console.log('An error ocurred when accessing media devices', err);
-        });
+        navigator.mediaDevices.getUserMedia(streamConstraints)
+            .then(function (stream) {
+                addLocalStream(stream);
+                socket.emit('join', code); // Send join request to the server
+            })
+            .catch(function (err) {
+                console.log('Error accessing media devices', err);
+            });
     });
 });
 
@@ -135,7 +131,7 @@ socket.on('offer', function (param) {
 socket.on('answer', function (event) {
     console.log(event);
     rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(event));
-})
+});
 
 function onIceCandidate(event) {
     let id = isCaller ? receiver : caller;
@@ -146,7 +142,7 @@ function onIceCandidate(event) {
             id: event.candidate.sdpMid,
             candidate: event.candidate.candidate,
             sendTo: id
-        })
+        });
     }
 }
 
