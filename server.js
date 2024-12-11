@@ -2,8 +2,11 @@ const express = require('express');
 const app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+const path = require("path");
 
 app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, "public")));
+
 
 io.on('connection', function (socket) {
     socket.on('create', function (callback) {
