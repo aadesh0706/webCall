@@ -2,13 +2,10 @@ const express = require('express');
 const app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-const path = require("path");
+const path = require('path');
 
-// app.use(express.static('public'));
-app.use(express.static(path.join(__dirname, "public")));
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+// Serve static files from the "public" directory
+app.use(express.static(path.join(__dirname, 'public')));
 
 io.on('connection', function (socket) {
     socket.on('create', function (callback) {
@@ -22,7 +19,7 @@ io.on('connection', function (socket) {
     });
 
     socket.on('candidate', function (event) {
-        console.log('sending candiadte to', event.sendTo);
+        console.log('sending candidate to', event.sendTo);
         io.to(event.sendTo).emit('candidate', event);
     });
 
@@ -35,10 +32,10 @@ io.on('connection', function (socket) {
         console.log('sending answer to', event.caller);
         io.to(event.caller).emit('answer', event.sdp);
     });
+});
 
+// Use environment variable for dynamic port assignment
+const PORT = process.env.PORT || 3000; // Fallback to 3000 if PORT is not defined
+http.listen(PORT, function () {
+    console.log(`Server running on port ${PORT}`);
 });
-http.listen(3000, function () {
-    console.log('listening on *:3000');
-console.log("http://localhost:3000");
-});
-module.export = server;
